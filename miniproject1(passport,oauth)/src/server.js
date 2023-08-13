@@ -5,6 +5,10 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); // Html form의 데이터를 가져오기 위해서 필요.
+
+// view engine setup
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 mongoose.set("strictQuery", false);
 mongoose
   .connect(
