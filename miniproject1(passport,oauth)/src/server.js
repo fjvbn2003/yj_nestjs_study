@@ -79,6 +79,15 @@ app.post("/login", (req, res, next) => {
 app.get("/signup", checkNotAuthenticated, (req, res) => {
   res.render("signup");
 });
+
+app.post("/logout", (req, res, next) => {
+  req.logOut(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/login");
+  });
+});
 app.post("/signup", async (req, res) => {
   // user 객체를 생성
   const user = new User(req.body);
