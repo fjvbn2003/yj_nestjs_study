@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const { default: mongoose } = require("mongoose");
 const app = express();
 
@@ -15,6 +16,8 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+app.use("/static", express.static(path.join(__dirname, "public")));
 const port = 4000;
 app.listen(port, () => {
   console.log(`Listening on ${port}`);
