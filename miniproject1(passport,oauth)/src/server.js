@@ -100,6 +100,16 @@ app.post("/signup", async (req, res) => {
     console.error(error);
   }
 });
+
+app.get("/auth/google", passport.authenticate("google"));
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    successReturnToOrRedirect: "/",
+    failureRedirect: "/login",
+  })
+);
+
 const port = 4000;
 app.listen(port, () => {
   console.log(`Listening on ${port}`);
