@@ -40,14 +40,14 @@ const localStrategyConfig = new LocalStratege(
 );
 passport.use("local", localStrategyConfig);
 
-const googleClientID =
-  "152162374704-0nl5l3d3tvg1qmoj3jca2v40e4vusltk.apps.googleusercontent.com";
-const googleClientSecret = "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";
+const googleClientID = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 const googleStrategyConfig = new GoogleStrategy(
   {
     clientID: googleClientID,
     clientSecret: googleClientSecret,
+    prompt: "select_account",
     callbackURL: "/auth/google/callback",
     scope: ["email", "profile"],
   },

@@ -3,6 +3,8 @@ const path = require("path");
 const { default: mongoose } = require("mongoose");
 const User = require("./models/users.model");
 const passport = require("passport");
+
+require("dotenv").config();
 const cookieSession = require("cookie-session");
 const {
   checkAuthenticated,
@@ -10,7 +12,7 @@ const {
 } = require("./middlewares/auth");
 
 const app = express();
-const cookieEncryptionKey = "supersecret-key";
+const cookieEncryptionKey = process.env.COOKIE_ENCRYPTION_KEY;
 app.use(
   cookieSession({
     name: "cookie-session-name",
@@ -42,9 +44,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 mongoose.set("strictQuery", false);
 mongoose
-  .connect(
-    `mongodb+srv://fjvbn2003:qwer1234@yj-nestjs-study.ggiizxj.mongodb.net/?retryWrites=true&w=majority`
-  )
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("mongodb connected");
   })
@@ -110,7 +110,10 @@ app.get(
   })
 );
 
-const port = 4000;
+const config = require("config");
+const serverConfig = config.get("server");
+
+const port = serverConfig.port;
 app.listen(port, () => {
   console.log(`Listening on ${port}`);
 });
