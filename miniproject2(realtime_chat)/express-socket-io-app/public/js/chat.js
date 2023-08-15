@@ -18,5 +18,19 @@ socket.on("roomData", ({ room, users }) => {
   const html = Mustache.render(sidebarTemplate, { room, users });
   document.querySelector("#sidebar").innerHTML = html;
 });
+const messageTemplate = document.querySelector("#message-template").innerHTML;
+const messages = document.querySelector("#messages");
 
-socket.on("message");
+socket.on("message", (message) => {
+  const html = Mustache.render(messageTemplate, {
+    username: message.username,
+    message: message.text,
+    createdAt: moment(message.createdAt).format("h:mm a"),
+  });
+  messages.insertAdjacentHTML("beforeend", html);
+  scrollToBottom();
+});
+
+function scrollToBottom() {
+  messages.scrollTop = messages.scrollHeight;
+}
