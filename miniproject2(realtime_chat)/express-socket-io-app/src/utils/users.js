@@ -31,4 +31,12 @@ const getUser = (id) => {
   return users.find((user) => user.id === id);
 };
 
-module.exports = { addUser, getUsersInRoom, getUser };
+const removeUser = (id) => {
+  // 지우려고 하는 유저가 있는지 확인
+  const index = users.findIndex((user) => user.id === id);
+  if (index != -1) {
+    return users.splice(index, 1)[0];
+  }
+};
+
+module.exports = { addUser, getUsersInRoom, getUser, removeUser };
