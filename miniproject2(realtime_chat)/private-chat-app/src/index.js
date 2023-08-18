@@ -4,6 +4,9 @@ const app = express();
 
 const http = require("http");
 const { Server } = require("socket.io");
+const { default: mongoose } = require("mongoose");
+require("dotenv").config();
+
 const server = http.createServer(app);
 
 const io = new Server(server);
@@ -24,6 +27,15 @@ io.on("connection", async (socket) => {
   /// 유저가 방에서 나갔을 때
   socket.on("disconnect", () => {});
 });
+mongoose.set("strictQuery", false);
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("mongodb connected");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 const port = 4000;
 server.listen(port, () => {
