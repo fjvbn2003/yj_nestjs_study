@@ -15,9 +15,31 @@ const publicDirectory = path.join(__dirname, "../public");
 app.use(express.static(publicDirectory));
 app.use(express.json());
 
+app.post("/session", (req, res) => {
+  let data = {
+    username: req.body.username,
+    userID: randomUUID(),
+  };
+  res.send(data);
+});
+
+io.use((socket, next) => {
+  const username = socket.handshake.auth.username;
+  const userID = socket.handshake.auth.userID;
+  if (!username) {
+    return next(new Error("Invalid username"));
+  }
+  socket.username = username;
+  socket.id = userID;
+  next();
+});
+
 let users = [];
 io.on("connection", async (socket) => {
-  let userData = {};
+  let userData = {
+    username: socket.username,
+    userID: socket.id,
+  };
   users.push(userData);
   io.emit("user-data", { users });
   // 클라이언트에서 보내온 메시지
@@ -27,6 +49,7 @@ io.on("connection", async (socket) => {
   /// 유저가 방에서 나갔을 때
   socket.on("disconnect", () => {});
 });
+
 mongoose.set("strictQuery", false);
 mongoose
   .connect(process.env.MONGO_URI)
