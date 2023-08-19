@@ -7,6 +7,16 @@ socket.onAny((event, ...args) => {
 });
 
 // 전역변수들
+
+const chatBody = document.querySelector(".chat-body");
+const userTitle = document.querySelector("#user-title");
+const loginContainer = document.querySelector(".login-container");
+const userTable = document.querySelector(".users");
+const userTagline = document.querySelector("#users-tagline");
+const tile = document.querySelector("#active-user");
+const messages = document.querySelector(".messages");
+const msgDiv = document.querySelector(".msg-form");
+
 const loginForm = document.querySelector(".user-login");
 loginForm.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -15,39 +25,30 @@ loginForm.addEventListener("submit", (e) => {
   username.value = "";
 });
 
-const chatBody = document.querySelector(".chat-body");
-const userTitle = document.querySelector("user-title");
-const loginContainer = document.querySelector(".login-container");
-const userTable = document.querySelector(".users");
-const userTagline = document.querySelector("#users-tagline");
-const tile = document.querySelector("#active-user");
-const messages = document.querySelector(".messages");
-const msgDiv = document.querySelector(".msg-form");
-
-const socketConnect = async (username, userID) => {
-  socket.auth = { username, userID };
-  await socket.connect();
-};
-
 const createSession = async (username) => {
   let options = {
-    methos: "POST",
+    method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username }),
   };
   await fetch("/session", options)
     .then((res) => res.json())
     .then((data) => {
-      socketConnect(data.username, data.userId);
+      socketConnect(data.username, data.userID);
 
       localStorage.setItem("session-username", data.username);
-      localStorage.setItem("session-userId", data.userID);
+      localStorage.setItem("session-userID", data.userID);
 
       loginContainer.classList.add("d-none");
       chatBody.classList.remove("d-none");
       userTitle.innerHTML = data.username;
     })
     .catch((err) => console.log(err));
+};
+
+const socketConnect = async (username, userID) => {
+  socket.auth = { username, userID };
+  await socket.connect();
 };
 
 socket.on("users-data", ({ users }) => {

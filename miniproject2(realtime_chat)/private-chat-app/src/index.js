@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const app = express();
-
+const crypto = require("crypto");
 const http = require("http");
 const { Server } = require("socket.io");
 const { default: mongoose } = require("mongoose");
@@ -14,11 +14,11 @@ const io = new Server(server);
 const publicDirectory = path.join(__dirname, "../public");
 app.use(express.static(publicDirectory));
 app.use(express.json());
-
+const randomId = () => crypto.randomBytes(8).toString("hex");
 app.post("/session", (req, res) => {
   let data = {
     username: req.body.username,
-    userID: randomUUID(),
+    userID: randomId(),
   };
   res.send(data);
 });
@@ -41,7 +41,7 @@ io.on("connection", async (socket) => {
     userID: socket.id,
   };
   users.push(userData);
-  io.emit("user-data", { users });
+  io.emit("users-data", { users });
   // 클라이언트에서 보내온 메시지
   socket.on("message-to-server", () => {});
   // 데이터베이스에서 메시지 가져오기
