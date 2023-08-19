@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const http = require("http");
 const { Server } = require("socket.io");
 const { default: mongoose } = require("mongoose");
+const { saveMessages } = require("./utils/messages");
 require("dotenv").config();
 
 const server = http.createServer(app);
@@ -43,7 +44,10 @@ io.on("connection", async (socket) => {
   users.push(userData);
   io.emit("users-data", { users });
   // 클라이언트에서 보내온 메시지
-  socket.on("message-to-server", () => {});
+  socket.on("message-to-server", (payload) => {
+    io.to(payload.to).emit("message-to-client", payload);
+    saveMessages(payload);
+  });
   // 데이터베이스에서 메시지 가져오기
   socket.on("fetch-messages", () => {});
   /// 유저가 방에서 나갔을 때

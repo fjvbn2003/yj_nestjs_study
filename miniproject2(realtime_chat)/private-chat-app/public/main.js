@@ -51,6 +51,24 @@ const socketConnect = async (username, userID) => {
   await socket.connect();
 };
 
+const setActiveUser = (element, username, userID) => {
+  userTitle.innerHTML = username;
+  userTitle.setAttribute("userID", userID);
+
+  const list = document.getElementsByClassName("socket-users");
+  for (let i = 0; i < list.length; i++) {
+    list[i].classList.remove("table-active");
+  }
+  element.classList.add("table-active");
+
+  msgDiv.classList.remove("d-none");
+  messages.classList.remove("d-none");
+  messages.innerHTML = "";
+  socket.emit("fetch-messages", { reveiver: userID });
+  const notify = document.getElementById(userID);
+  notify.classList.add("d-none");
+};
+
 socket.on("users-data", ({ users }) => {
   //제거하기 self user
   const index = users.findIndex((user) => user.userID === socket.id);
@@ -88,3 +106,60 @@ if (sessUsername && sessUserID) {
   chatBody.classList.remove("d-none");
   userTitle.innerHTML = sessUsername;
 }
+
+const msgForm = document.querySelector(".msgForm");
+const message = document.getElementById("message");
+msgForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const to = userTitle.getAttribute("userID");
+  const time = new Date().toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+  const payload = {
+    from: socket.id,
+    to,
+    message: message.value,
+    time,
+  };
+
+  //메시지를 서버에 전송
+  socket.emit("message-to-server", payload);
+  appendMessage({ ...payload, background: "bg-success", position: "right" });
+  message.value = "";
+  message.focus();
+});
+
+const appendMessage = ({ message, time, background, position }) => {
+  let div = document.createElement("div");
+  div.classList.add(
+    "message",
+    "bg-opacity-25",
+    "rounded",
+    "m-2",
+    "px-2",
+    "py-1",
+    background,
+    position
+  );
+  div.innerHTML = `<span class="msg-text">${message}</span><span class="msg-time">${time}</span>`;
+  messages.append(div);
+  messages.scrollTo(0, messages.scrollHeight);
+};
+socket.on("message-to-client", ({ from, message, time }) => {
+  const receiver = userTitle.getAttribute("userID");
+  const notify = document.getElementById(from);
+  if (receiver === null) {
+    notify.classList.remove("d-none");
+  } else if (receiver === from) {
+    appendMessage({
+      message,
+      time,
+      background: "bg-secondary",
+      position: "left",
+    });
+  } else {
+    notify.classList.remove("d-none");
+  }
+});
