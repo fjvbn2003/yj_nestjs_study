@@ -13,7 +13,7 @@ const userTitle = document.querySelector("#user-title");
 const loginContainer = document.querySelector(".login-container");
 const userTable = document.querySelector(".users");
 const userTagline = document.querySelector("#users-tagline");
-const tile = document.querySelector("#active-user");
+const title = document.querySelector("#active-user");
 const messages = document.querySelector(".messages");
 const msgDiv = document.querySelector(".msg-form");
 
@@ -52,8 +52,8 @@ const socketConnect = async (username, userID) => {
 };
 
 const setActiveUser = (element, username, userID) => {
-  userTitle.innerHTML = username;
-  userTitle.setAttribute("userID", userID);
+  title.innerHTML = username;
+  title.setAttribute("userID", userID);
 
   const list = document.getElementsByClassName("socket-users");
   for (let i = 0; i < list.length; i++) {
@@ -111,7 +111,7 @@ const msgForm = document.querySelector(".msgForm");
 const message = document.getElementById("message");
 msgForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const to = userTitle.getAttribute("userID");
+  const to = title.getAttribute("userID");
   const time = new Date().toLocaleString("en-US", {
     hour: "numeric",
     minute: "numeric",
@@ -148,7 +148,7 @@ const appendMessage = ({ message, time, background, position }) => {
   messages.scrollTo(0, messages.scrollHeight);
 };
 socket.on("message-to-client", ({ from, message, time }) => {
-  const receiver = userTitle.getAttribute("userID");
+  const receiver = title.getAttribute("userID");
   const notify = document.getElementById(from);
   if (receiver === null) {
     notify.classList.remove("d-none");
