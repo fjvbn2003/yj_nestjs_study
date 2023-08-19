@@ -64,7 +64,7 @@ const setActiveUser = (element, username, userID) => {
   msgDiv.classList.remove("d-none");
   messages.classList.remove("d-none");
   messages.innerHTML = "";
-  socket.emit("fetch-messages", { reveiver: userID });
+  socket.emit("fetch-messages", { receiver: userID });
   const notify = document.getElementById(userID);
   notify.classList.add("d-none");
 };
@@ -161,5 +161,38 @@ socket.on("message-to-client", ({ from, message, time }) => {
     });
   } else {
     notify.classList.remove("d-none");
+  }
+});
+
+socket.on("user-away", (userID) => {
+  const to = title.getAttribute("userID");
+  if (to === userID) {
+    userTitle.innerTHTML = "&nbsp;";
+    msgDiv.classList.add("d-none");
+    messages.classList.add("d-none");
+  }
+});
+
+socket.on("stored-messages", ({ messages }) => {
+  if (messages.length > 0) {
+    messages.forEach((msg) => {
+      let payload = {
+        message: msg.message,
+        time: msg.time,
+      };
+      if (msg.from === socket.id) {
+        appendMessage({
+          ...payload,
+          background: "bg-success",
+          position: "right",
+        });
+      } else {
+        appendMessage({
+          ...payload,
+          background: "bg-secondary",
+          position: "left",
+        });
+      }
+    });
   }
 });
